@@ -31,15 +31,17 @@ public class UserService
         }
     }
 
-    public void createUser(UserDto userDto)
+    public boolean createUser(UserDto userDto)
     {
         if (repository.existsByUserName(userDto.getUserName()))
+        {
             throw new UserWithGivenLoginAlreadyExistsException("User with given login already exists");
-
+        }
         else
         {
             User newUser = mapper.mapToUser(userDto);
             repository.save(newUser);
+            return true;
         }
     }
 }

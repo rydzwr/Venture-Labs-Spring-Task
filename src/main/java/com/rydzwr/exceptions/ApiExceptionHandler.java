@@ -55,4 +55,19 @@ public class ApiExceptionHandler
 
         return new ResponseEntity<>(exception, badRequest);
     }
+
+    @ExceptionHandler(value = {IdNotFoundException.class})
+    public ResponseEntity<Object> handleException(IdNotFoundException e)
+    {
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+
+        Exception exception = new Exception(
+                e.getMessage(),
+                e,
+                HttpStatus.BAD_REQUEST,
+                ZonedDateTime.now(ZoneId.of("Z"))
+        );
+
+        return new ResponseEntity<>(exception, badRequest);
+    }
 }

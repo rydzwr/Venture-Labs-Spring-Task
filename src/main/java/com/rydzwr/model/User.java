@@ -10,6 +10,7 @@ public class User
 {
     @Id
     @NotNull
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int userId;
 
     @NotNull
