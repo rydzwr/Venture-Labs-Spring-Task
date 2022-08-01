@@ -7,6 +7,8 @@ public class PasswordAuth
 {
     public static PasswordAuth instance;
 
+    // Method that decodes password given in authorization header
+
     public String passwordFromAuthHeader(String authHeader)
     {
         String deviceCodeBase64 = authHeader.split(" ")[1];

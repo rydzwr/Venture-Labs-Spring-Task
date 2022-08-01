@@ -22,10 +22,16 @@ public class UserService
 
     public UserDto login(String login, String password)
     {
+
+        // First, I'm checking is given user in database, if not -> throwing an exception
+
         if (!repository.existsByUserNameAndPassword(login, password))
             throw new WrongUserNameOrPasswordException("User with given login or password not found");
         else
         {
+
+            // Returning whole user data as JSON object
+
             User user = repository.getUserByUserNameAndPassword(login, password);
             return mapper.mapToUserDto(user);
         }
@@ -33,12 +39,17 @@ public class UserService
 
     public boolean createUser(UserDto userDto)
     {
+
+        // Checking for userName duplicate in database
+
         if (repository.existsByUserName(userDto.getUserName()))
         {
             throw new UserWithGivenLoginAlreadyExistsException("User with given login already exists");
         }
         else
         {
+            // If userName is not already in use, I'm creating new userObject from given JSON and saving in database
+
             User newUser = mapper.mapToUser(userDto);
             repository.save(newUser);
             return true;

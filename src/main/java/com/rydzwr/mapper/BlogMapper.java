@@ -10,6 +10,8 @@ import java.util.List;
 @Service
 public class BlogMapper
 {
+    // Converting JSON object to database object
+
     public Blog mapToBlog(BlogDto blogDto)
     {
         return new Blog(
@@ -19,6 +21,8 @@ public class BlogMapper
         );
     }
 
+    // Converting database blog object to JSON object
+
     public BlogDto mapToBlogDto(Blog blog)
     {
         return new BlogDto(
@@ -27,6 +31,8 @@ public class BlogMapper
                 blog.getUserId()
         );
     }
+
+    // Converting all posts from database to JSON objects and returning as list
 
     public List<BlogDto> mapToBlogDtoList(List<Blog> blogList)
     {

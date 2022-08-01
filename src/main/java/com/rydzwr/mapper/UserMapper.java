@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserMapper
 {
+    // Converting database user object to JSON object
+
     public UserDto mapToUserDto(User user)
     {
         return new UserDto(
@@ -17,6 +19,8 @@ public class UserMapper
                 user.getReadonly()
         );
     }
+
+    // Converting JSON object to database object
 
     public User mapToUser(UserDto userDto)
     {
