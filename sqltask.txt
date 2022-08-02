@@ -1,0 +1,56 @@
+2a.
+This table needs proper localization support. Both city and country names should be in separate tables
+like 'cities_local' and 'countries_local' where columns would represent names in different languages.
+This way 'city' and 'country' fields could be made into foreign keys referenced by their respective id columns.
+This would make language-independent queries much simpler and information would be properly separated, ie.
+no multiple unrelated responsibilities for one table like offer info and localization of names.
+
+The exact same problem happens with 'extra' and 'insurance' column. It has an effective subtable inside each
+of these columns, which makes querying difficult because you need to parse a semicolon separated string.
+The solution here is the same, extract extras and insurance records into its own tables with proper SQL columns
+and use one to many relation with a foreign key in extras and insurance tables to hold the id of the offer they are tied to. 
+
+One should also think what happens if the currency is freely selectable. Do you auto convert euro to dollar if
+user only gives prices in one currency? Do you skip the records without dollar prices altogether when filtering
+offers and user selected prices in dollars? Depends on client requirements.
+
+2b
+First of all, charset should be considered so that it can support all the special chars in languages
+we want to support now and in the future. UTF-8 would be a good choice if we don't have to interface
+with any old code.
+
+Assuming we partitioned the table as described in 2a:
+
+String fields 'city', 'country', name of an extra, name of insurance should be varchar of whatever
+length we deem appropriate.
+
+Money fields should use DECIMAL(19, 4) which is a numeric type with 19 digits (9 storage bytes) and 
+a scale of 4, ie. 4 digits to the right of the decimal point. Built-in MONEY type can be too imprecise.
+
+2c.
+An index is a helper data strcture built using the data in the table which allows finding elements in the
+array quickly, that is best case logarithmic time as opposed to a full array scan in linear time.
+This grants an exponential increase in search performance. Indices are normally implemented using balanced
+binary trees.
+
+Setting indices for a given table depends on the queries being run and the importance/frequency of those queries.
+No index fits all queries. It is developer's job to consider all the trade offs like increased write time.
+
+Obvious index for each table is the primary key column ie. id. Then if city and country are foreign keys
+into their localization tables, we can see from the regular queries list that their name columns
+should be indes as well to allow fast lookup to city id given city name and then lookup by city/country id
+in the main table. Camper name must be indexed as this is the most common search probably. Lastly,
+search by price range is common, so these should have a simple index attached too so that only a range scan
+happens on lookup.
+
+2d.
+
+A foreign key is a column that refers to a primary key in another table. In our example if we created our
+localization tables for cities and countries, city and country columns in the main table would become
+foreign keys referring to ids of rows in localization tables.
+
+If we also created the one-to-many relation on extras and insurance, each extra or insurance record would have
+a foreign key telling what is the id of the offer it should be tied to.
+
+
+
