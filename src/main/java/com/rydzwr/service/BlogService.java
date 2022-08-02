@@ -33,27 +33,23 @@ public class BlogService
         return blogMapper.mapToBlogDtoList(blogRepository.findAll());
     }
 
-    public void addPost(String userName, String password, BlogDto blogDto)
+    public void addPost(int userId, BlogDto blogDto)
     {
         // At first I need to check is given user valid
 
-        if (!userRepository.existsByUserNameAndPassword(userName, password))
+        if (!userRepository.existsByUserId(userId))
             throw new WrongUserNameOrPasswordException("Wrong User Name Or Password");
 
-            // if true I'm creating newPost object and sets userId again
-            // just to be sure, and to avoid frontend invalid data problems
-            // Then saves valid object in database
-
-        else
-        {
-            User user = userRepository.getUserByUserNameAndPassword(userName, password);
-            Blog newPost = blogMapper.mapToBlog(blogDto);
-            newPost.setUserId(user.getUserId());
-            blogRepository.save(newPost);
-        }
+        // if true I'm creating newPost object and sets userId again
+        // just to be sure, and to avoid frontend invalid data problems
+        // Then saves valid object in database
+        User user = userRepository.getByUserId(userId);
+        Blog newPost = blogMapper.mapToBlog(blogDto);
+        newPost.setUserId(user.getUserId());
+        blogRepository.save(newPost);
     }
 
-    public void deletePost(UserDto userDto, int postId)
+    public void deletePost(int userId, int postId)
     {
         // I'm wrapping everything in "try-catch" to throw custom exception when
         // given postId is not in database, I could use Optional when returning blog from repository,
@@ -62,7 +58,7 @@ public class BlogService
         try
         {
             Blog blog = blogRepository.getById(postId);
-            User user = userRepository.getUserByUserNameAndPassword(userDto.getUserName(), userDto.getPassword());
+            User user = userRepository.getByUserId(userId);
 
             // Then checking is user trying to remove his post or user is an admin
 
@@ -71,10 +67,9 @@ public class BlogService
                 blogRepository.deleteById(blog.getId());
             }
             else throw new NoPermissionException("You are not allowed to remove given post");
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
-            throw  new IdNotFoundException("Post with given ID not found");
+            throw new IdNotFoundException("Post with given ID not found");
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.rydzwr.controller;
 
 import com.rydzwr.DTO.UserDto;
-import com.rydzwr.service.PasswordAuth;
 import com.rydzwr.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,16 +16,16 @@ public class UserController
         this.service = service;
     }
 
-    @GetMapping(value = "/login/{userName}")
-    public ResponseEntity<UserDto> login(@PathVariable String userName, @RequestHeader("Authorization") String auth)
+    @GetMapping(value = "/login")
+    public ResponseEntity<UserDto> login(@RequestBody UserDto userDto)
     {
-        String password = PasswordAuth.getInstance().passwordFromAuthHeader(auth);
-        return ResponseEntity.ok(service.login(userName, password));
+        return ResponseEntity.ok(service.login(userDto));
     }
 
     @PostMapping
-    public ResponseEntity<Boolean> createUser(@RequestBody UserDto userDto)
+    public ResponseEntity<Void> createUser(@RequestBody UserDto userDto)
     {
-        return ResponseEntity.ok(service.createUser(userDto));
+        service.createUser(userDto);
+        return ResponseEntity.ok().build();
     }
 }

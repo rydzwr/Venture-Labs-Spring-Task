@@ -3,7 +3,7 @@ package com.rydzwr.controller;
 import com.rydzwr.DTO.BlogDto;
 import com.rydzwr.DTO.UserDto;
 import com.rydzwr.service.BlogService;
-import com.rydzwr.service.PasswordAuth;
+import com.rydzwr.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,10 +14,12 @@ import java.util.List;
 public class BlogController
 {
     private final BlogService service;
+    private final UserService userService;
 
-    public BlogController(BlogService service)
+    public BlogController(BlogService service, UserService userService)
     {
         this.service = service;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -26,21 +28,17 @@ public class BlogController
         return ResponseEntity.ok(service.getAllPosts());
     }
 
-    @PostMapping(value = "/add/{userName}")
-    public ResponseEntity<Void> addPost(
-            @PathVariable String userName,
-            @RequestBody BlogDto blogDto,
-            @RequestHeader("Authorization") String auth)
+    @PostMapping(value = "/{userId}")
+    public ResponseEntity<Void> addPost(@RequestBody BlogDto blogDto, @PathVariable int userId)
     {
-        String password = PasswordAuth.getInstance().passwordFromAuthHeader(auth);
-        service.addPost(userName, password, blogDto);
+        service.addPost(userId, blogDto);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(value = "/delete/{postId}")
-    public ResponseEntity<Void> deletePost(@RequestBody UserDto userDto, @PathVariable int postId)
+    @DeleteMapping
+    public ResponseEntity<Void> deletePost(@RequestParam int userId, @RequestParam int postId)
     {
-        service.deletePost(userDto, postId);
+        service.deletePost(userId, postId);
         return ResponseEntity.ok().build();
     }
 }
